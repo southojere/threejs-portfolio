@@ -1,4 +1,8 @@
-import { DirectionalLight, WebGLRenderer, Scene, PerspectiveCamera } from "three";
+import { DirectionalLight, WebGLRenderer, Scene, PerspectiveCamera, TextureLoader } from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
+
+
 import { createCamera } from "./components/camera";
 import { createCube } from "./components/cube";
 import { createLights } from "./components/light";
@@ -7,10 +11,12 @@ import { createControls } from "./systems/controls";
 import { Resizer } from "./systems/Resizer";
 import Loop from "./systems/Loop";
 import { createRenderer } from "./systems/renderer";
+import ResourceLoader from "./utils/ResourceLoader";
+import { createPC } from "./components/pc";
 
 
 class World {
-    // 
+    // components
     private camera: PerspectiveCamera;
     private renderer: WebGLRenderer;
     private scene: Scene;
@@ -20,7 +26,6 @@ class World {
     private loop: Loop;
 
 
-    // public
     constructor(container: HTMLDivElement) {
         this.camera = createCamera();
         this.scene = createScene();
@@ -30,7 +35,14 @@ class World {
         createControls(this.camera, this.renderer.domElement);
         container.append(this.renderer.domElement);
 
+        const gltfLoader = new GLTFLoader();
+        const dracoLoader = new DRACOLoader();
+        const textureLoader = new TextureLoader();
+        const loader = new ResourceLoader({ gltfLoader, dracoLoader, textureLoader })
         const cube = createCube();
+
+        // TODO: figure about a better way to load this async stuff
+        createPC(loader).then(pc => this.scene.add(pc));
         this.loop.updatables.push(cube);
 
         this.scene.add(this.light, cube);
