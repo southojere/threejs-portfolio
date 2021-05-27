@@ -10,7 +10,7 @@ type UpdatableMesh = Mesh & {
 }
 
 function createCube() {
-    const geometry = new BoxBufferGeometry(2, 2, 2);
+    const geometry = new BoxBufferGeometry(1, 1, 1);
     const material = new MeshStandardMaterial({ color: "purple" });
     const cube: UpdatableMesh = new Mesh(geometry, material);
 
